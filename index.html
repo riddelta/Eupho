@@ -174,10 +174,16 @@ p,
     width: 90%;
     height: 90%;
     object-fit: contain;
+
     user-select: none;
+    -webkit-user-select: none;
+
     -webkit-user-drag: none;
-    touch-action: manipulation;
     -webkit-touch-callout: none;
+
+    touch-action: manipulation;
+
+    pointer-events: auto;
 }
 
 #progressArea{
@@ -486,6 +492,10 @@ async function updateGrid(){
           img.src = columnImages[x];
           img.className = "columnImage";
           img.alt = x;
+
+          img.addEventListener("contextmenu", e => {
+               e.preventDefault();
+          });
           
           // タッチ開始
           img.addEventListener("pointerdown", () => {
@@ -594,6 +604,8 @@ async function updateGrid(){
 }
 
 </script>
-
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+});
 </body>
 </html>
