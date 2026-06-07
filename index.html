@@ -323,7 +323,7 @@ async function updateGrid(){
 
             board[x] = [];
 
-            const maxY = (x === 9) ? 10 : 5;
+            const maxY = (x === 8) ? 10 : 5;
 
             for(let y=1; y<=maxY; y++){
                 board[x][y] = 0;
@@ -356,7 +356,7 @@ async function updateGrid(){
 
         for(let x=1; x<=9; x++){
 
-            const maxY = (x === 9) ? 10 : 5;
+            const maxY = (x === 8) ? 10 : 5;
 
             for(let y=1; y<=maxY; y++){
 
@@ -378,7 +378,7 @@ async function updateGrid(){
 
             let allGray = true;
 
-            const maxY = (x === 9) ? 10 : 5;
+            const maxY = (x === 8) ? 10 : 5;
 
             for(let y=1; y<=maxY; y++){
 
@@ -473,7 +473,7 @@ async function updateGrid(){
             let exists = false;
 
             visibleColumns.forEach(x=>{
-                if(!(x <= 8 && y > 5)){
+                if(!(x !== 8 && y > 5)){
                     exists = true;
                 }
             });
@@ -497,7 +497,7 @@ async function updateGrid(){
                const cell = document.createElement("div");
                cell.className = "cell";
 
-               if(x <= 8 && y > 5){
+               if(x !== 8 && y > 5){
                    // 存在しないセルは透明にして場所だけ確保
                     cell.style.visibility = "hidden";
                 }
