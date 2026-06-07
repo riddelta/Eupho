@@ -176,6 +176,8 @@ p,
     object-fit: contain;
     user-select: none;
     -webkit-user-drag: none;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
 }
 
 #progressArea{
@@ -198,6 +200,27 @@ p,
 #progressBar{
     flex:1;
     height:18px;
+}
+
+#imagePreview{
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+
+    width:min(70vw, 350px);
+    height:min(70vw, 350px);
+
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+
+    display:none;
+
+    pointer-events:none;
+    z-index:9999;
+
+    filter:drop-shadow(0 0 20px rgba(0,0,0,0.5));
 }
 
 </style>
@@ -234,6 +257,7 @@ p,
     </div>
 
     <div id="grid"></div>
+    <div id="imagePreview"></div>
 
 </div>
 
@@ -272,6 +296,8 @@ let currentTeam = 1;
 let timer = null;
 
 const grid = document.getElementById("grid");
+const preview =
+    document.getElementById("imagePreview");
 
 
 
@@ -460,7 +486,27 @@ async function updateGrid(){
           img.src = columnImages[x];
           img.className = "columnImage";
           img.alt = x;
-
+          
+          // タッチ開始
+          img.addEventListener("pointerdown", () => {
+              preview.style.backgroundImage =
+                  `url(${img.src})`;
+              preview.style.display = "block";
+          });
+          
+          // 指を離したら消す
+          img.addEventListener("pointerup", () => {
+              preview.style.display = "none";
+          });
+          
+          img.addEventListener("pointerleave", () => {
+              preview.style.display = "none";
+          });
+          
+          img.addEventListener("pointercancel", () => {
+              preview.style.display = "none";
+          });
+          
           header.appendChild(img);
 
           grid.appendChild(header);
