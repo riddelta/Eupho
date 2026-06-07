@@ -269,6 +269,10 @@ p,
 
 <script>
 
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+});
+    
 //========================
 // GAS URL
 //========================
@@ -604,8 +608,6 @@ async function updateGrid(){
 }
 
 </script>
-document.addEventListener("contextmenu", function(e){
-    e.preventDefault();
-});
+
 </body>
 </html>
