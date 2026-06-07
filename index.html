@@ -170,6 +170,14 @@ p,
     visibility:hidden;
 }
 
+.columnImage{
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
 #progressArea{
     display:none;
     margin-top:10px;
@@ -246,6 +254,18 @@ const COLORS = {
     1:"#ffd84d",
     2:"#ff5c5c",
     3:"#57d657"
+};
+
+const columnImages = {
+    1: "1.png",
+    2: "2.png",
+    3: "3.png",
+    4: "4.png",
+    5: "5.png",
+    6: "6.png",
+    7: "7.png",
+    8: "8.png",
+    9: "9.png"
 };
 
 let currentTeam = 1;
@@ -433,14 +453,19 @@ async function updateGrid(){
 
       visibleColumns.forEach(x => {
 
-         const header = document.createElement("div");
-         header.className = "headerCell";
+          const header = document.createElement("div");
+          header.className = "headerCell";
 
-         header.textContent = x;
+          const img = document.createElement("img");
+          img.src = columnImages[x];
+          img.className = "columnImage";
+          img.alt = x;
 
-         grid.appendChild(header);
+          header.appendChild(img);
 
-    });
+          grid.appendChild(header);
+
+      });
 
         for(let y=1; y<=10; y++){
 
