@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>-Eupho-</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    background:linear-gradient(
+        180deg,
+        #15254b 0%,
+        #0b1630 100%
+    );
+    min-height:100vh;
+    text-align:center;
+    color:#ffffff;
+}
+
+h1{
+    margin-top:30px;
+    margin-bottom:10px;
+    font-family:"Orbitron", sans-serif;
+    font-size:3rem;
+    letter-spacing:0.15em;
+    font-weight:700;
+    color:#ffffff;
+    text-shadow:0 4px 10px rgba(0,0,0,0.35);
+}
+
+p{
+    color:#d8e4ff;
+    font-size:1.1rem;
+}
+
+#selectScreen{
+    display:block;
+}
+
+#gameScreen{
+    display:none;
+}
+
+.teamButtons{
+    margin-top:40px;
+}
+
+.teamButtons button{
+    width:90px;
+    height:90px;
+    margin:10px;
+
+    border:none;
+    border-radius:18px;
+
+    background:#1f356b;
+    color:white;
+
+    font-size:32px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+
+    transition:
+        transform 0.15s,
+        background 0.15s,
+        box-shadow 0.15s;
+}
+
+.teamButtons button:hover{
+    transform:translateY(-3px);
+    background:#2c4b95;
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+}
+
+.teamButtons button:active{
+    transform:translateY(0px);
+}
+
+#status{
+    margin:20px;
+    color:#d8e4ff;
+    font-size:0.95rem;
+}
+
+#status,
+#progressArea,
+p,
+.headerCell{
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    font-weight:700;
+}
+
+#grid{
+    margin:25px auto;
+    display:grid;
+    gap:6px;
+    justify-content:center;
+}
+
+.cell{
+    aspect-ratio:1/1;
+
+    background:#999999;
+
+    border-radius:12px;
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.25),
+        inset 0 1px 1px rgba(255,255,255,0.15);
+
+    transition:
+        background-color 0.3s,
+        transform 0.2s;
+}
+
+@media (max-width:600px){
+
+    .cell{
+        border-radius:6px;
+        box-shadow:
+            0 1px 3px rgba(0,0,0,0.25),
+            inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+}
+
+.hidden{
+    visibility:hidden;
+}
+
+@media (max-width:600px){
+
+    h1{
+        font-size:2.2rem;
+    }
+
+    .teamButtons button{
+        width:75px;
+        height:75px;
+        font-size:28px;
+    }
+
+}
+
+.headerCell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+    font-weight:bold;
+    font-size:1.1rem;
+}
+
+.cornerCell{
+    visibility:hidden;
+}
+
+#progressArea{
+    display:none;
+    margin-top:10px;
+    color:#d8e4ff;
+    font-size:1rem;
+}
+
+#progressContainer{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    width:min(700px, 100%);
+    margin:0 auto;
+}
+
+#progressBar{
+    flex:1;
+    height:18px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="selectScreen">
+
+    <h1>-Eupho-</h1>
+
+    <p>チーム番号を選択してください</p>
+
+    <div class="teamButtons">
+        <button onclick="selectTeam(1)">1</button>
+        <button onclick="selectTeam(2)">2</button>
+        <button onclick="selectTeam(3)">3</button>
+    </div>
+
+</div>
+
+<div id="gameScreen">
+
+    <h1>-Eupho-</h1>
+
+    <div id="status">接続中...</div>
+
+    <div id="progressArea">
+        <div id="progressContainer">
+            <span>踏破率</span>
+            <progress id="progressBar" max="50" value="0"></progress>
+            <span id="progressText">0%</span>
+        </div>
+    </div>
+
+    <div id="grid"></div>
+
+</div>
+
+<script>
+
+//========================
+// GAS URL
+//========================
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzrKEAIkTv196wJXvMZOQcLahcD-hA-WhlM6mP209bl9_G6FfZY0L2aukKK56_pfwoI/exec";
+
+//========================
+// 色設定
+//========================
+
+const COLORS = {
+    0:"#8a8a8a",
+    1:"#ffd84d",
+    2:"#ff5c5c",
+    3:"#57d657"
+};
+
+let currentTeam = 1;
+let timer = null;
+
+const grid = document.getElementById("grid");
+
+
+
+//========================
+// チーム選択
+//========================
+
+function selectTeam(team){
+
+    currentTeam = team;
+
+    document.getElementById("selectScreen").style.display="none";
+    document.getElementById("gameScreen").style.display="block";
+
+    updateGrid();
+
+    timer = setInterval(updateGrid,10000);
+
+}
+
+
+//========================
+// 更新
+//========================
+
+async function updateGrid(){
+
+    try{
+
+        document.getElementById("status").textContent = "更新中...";
+
+        const response = await fetch(
+            GAS_URL + "?t=" + Date.now()
+        );
+
+        if(!response.ok){
+            throw new Error();
+        }
+
+        const data = await response.json();
+
+        // -------------------------
+        // 内部データ生成
+        // -------------------------
+
+        const board = [];
+
+        for(let x=1; x<=9; x++){
+
+            board[x] = [];
+
+            const maxY = (x === 9) ? 10 : 5;
+
+            for(let y=1; y<=maxY; y++){
+                board[x][y] = 0;
+            }
+
+        }
+
+        data.forEach(row => {
+
+            const x = row[0];
+            const y = row[1];
+
+            let value = 0;
+
+            if(currentTeam === 1) value = row[2];
+            if(currentTeam === 2) value = row[3];
+            if(currentTeam === 3) value = row[4];
+
+            if(board[x] && board[x][y] !== undefined){
+                board[x][y] = value;
+            }
+
+        });
+
+        // -------------------------
+        // 緑マス数を計算
+        // -------------------------
+
+        let greenCount = 0;
+
+        for(let x=1; x<=9; x++){
+
+            const maxY = (x === 9) ? 10 : 5;
+
+            for(let y=1; y<=maxY; y++){
+
+                if(board[x][y] === 3){
+                    greenCount++;
+                }
+
+            }
+
+        }
+
+        // -------------------------
+        // 表示する列を判定
+        // -------------------------
+
+        const visibleColumns = [];
+
+        for(let x=1; x<=9; x++){
+
+            let allGray = true;
+
+            const maxY = (x === 9) ? 10 : 5;
+
+            for(let y=1; y<=maxY; y++){
+
+                if(board[x][y] !== 0){
+                    allGray = false;
+                    break;
+                }
+
+            }
+
+            if(!allGray){
+                visibleColumns.push(x);
+            }
+
+        }
+
+        // 全部灰色だった場合の保険
+        if(visibleColumns.length === 0){
+            visibleColumns.push(1);
+        }
+
+        // -------------------------
+        // セルサイズ計算
+        // 横幅優先
+        // ただし縦5マスが収まる大きさまで
+        // -------------------------
+
+        const gap = 6;
+
+        // 横：行番号列を1つ追加
+        const totalCols = visibleColumns.length + 1;
+
+        // 縦：列番号行を1つ追加
+        const totalRows = 6;
+
+        const maxByWidth =
+            (
+                window.innerWidth
+                - 40
+                - gap * (totalCols - 1)
+            )
+            / totalCols;
+
+        const maxByHeight =
+            (
+                window.innerHeight
+                - 220
+                - gap * (totalRows - 1)
+            )
+            / totalRows;
+
+        const cellSize = Math.floor(
+            Math.min(maxByWidth, maxByHeight)
+        );
+
+        grid.style.gridTemplateColumns =
+            `${cellSize}px repeat(${visibleColumns.length}, ${cellSize}px)`;
+
+        // -------------------------
+        // グリッド再生成
+        // -------------------------
+
+      grid.innerHTML = "";
+
+     // 左上空白
+
+      const corner = document.createElement("div");
+      corner.className = "headerCell cornerCell";
+      grid.appendChild(corner);
+
+      // 列番号
+
+      visibleColumns.forEach(x => {
+
+         const header = document.createElement("div");
+         header.className = "headerCell";
+
+         header.textContent = x;
+
+         grid.appendChild(header);
+
+    });
+
+        for(let y=1; y<=10; y++){
+
+            // 存在する行だけ行番号を表示
+            let exists = false;
+
+            visibleColumns.forEach(x=>{
+                if(!(x <= 8 && y > 5)){
+                    exists = true;
+                }
+            });
+
+            if(!exists){
+                continue;
+            }
+
+            // 行番号
+
+            const rowHeader = document.createElement("div");
+            rowHeader.className = "headerCell";
+            rowHeader.textContent = y;
+
+            grid.appendChild(rowHeader);
+
+            // 各セル
+
+            visibleColumns.forEach(x => {
+
+               const cell = document.createElement("div");
+               cell.className = "cell";
+
+               if(x <= 8 && y > 5){
+                   // 存在しないセルは透明にして場所だけ確保
+                    cell.style.visibility = "hidden";
+                }
+               else{
+                    cell.style.backgroundColor =
+                        COLORS[board[x][y]];
+                }
+
+               grid.appendChild(cell);
+
+           });
+
+        }
+
+        // -------------------------
+        // 踏破率表示
+        // -------------------------
+
+        if(visibleColumns.length === 9){
+
+            document.getElementById("progressArea").style.display = "block";
+
+            document.getElementById("progressBar").value =
+                greenCount;
+
+            document.getElementById("progressText").textContent =
+                Math.round(greenCount * 100 / 50) + "%";
+
+        }
+        else{
+
+            document.getElementById("progressArea").style.display = "none";
+
+        }
+        
+        document.getElementById("status").textContent =
+            "最終更新 : " +
+            new Date().toLocaleTimeString("ja-JP");
+
+    }
+    catch(e){
+
+        document.getElementById("status").textContent =
+            "通信エラー";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
