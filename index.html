@@ -18,11 +18,7 @@ body{
     margin:0;
     padding:20px;
     font-family:"Zen Kaku Gothic New", sans-serif;
-    background:linear-gradient(
-        180deg,
-        #15254b 0%,
-        #0b1630 100%
-    );
+    background:linear-gradient(180deg,#1f3871 0%,#081023 100%);
     min-height:100vh;
     text-align:center;
     color:#ffffff;
@@ -113,53 +109,38 @@ p,
 
 .cell{
     aspect-ratio:1/1;
-
     background:#999999;
-
     border-radius:18%;
-
     box-shadow:
         0 2px 6px rgba(0,0,0,0.25),
         inset 0 1px 1px rgba(255,255,255,0.15);
-
     transition:
         background-color 0.3s,
         transform 0.2s;
 }
 
 @media (max-width:600px){
-
     .cell{
         box-shadow:
             0 1px 3px rgba(0,0,0,0.25),
             inset 0 1px 1px rgba(255,255,255,0.15);
     }
-
 }
-
-.hidden{
-    visibility:hidden;
-}
-
 @media (max-width:600px){
-
     h1{
         font-size:2.2rem;
     }
-
     .teamButtons button{
         width:75px;
         height:75px;
         font-size:28px;
     }
-
 }
 
 .headerCell{
     display:flex;
     align-items:center;
     justify-content:center;
-
     color:white;
     font-weight:bold;
     font-size:1.1rem;
@@ -173,15 +154,11 @@ p,
     width: 90%;
     height: 90%;
     object-fit: contain;
-
     user-select: none;
     -webkit-user-select: none;
-
     -webkit-user-drag: none;
     -webkit-touch-callout: none;
-
     touch-action: manipulation;
-
     pointer-events: auto;
 }
 
@@ -197,7 +174,6 @@ p,
     align-items:center;
     justify-content:center;
     gap:10px;
-
     width:min(700px, 100%);
     margin:0 auto;
 }
@@ -207,24 +183,27 @@ p,
     height:18px;
 }
 
+#messageArea{
+    display:none;
+    margin-top:60px;
+    font-size:1.5rem;
+    font-weight:bold;
+    color:#d8e4ff;
+}
+
 #imagePreview{
     position:fixed;
     left:50%;
     top:50%;
     transform:translate(-50%,-50%);
-
     width:min(70vw, 350px);
     height:min(70vw, 350px);
-
     background-repeat:no-repeat;
     background-position:center;
     background-size:contain;
-
     display:none;
-
     pointer-events:none;
     z-index:9999;
-
     filter:drop-shadow(0 0 20px rgba(0,0,0,0.5));
 }
 
@@ -261,15 +240,7 @@ p,
         </div>
     </div>
 
-    <div id="messageArea"
-     style="
-        display:none;
-        margin-top:60px;
-        font-size:1.5rem;
-        font-weight:bold;
-        color:#d8e4ff;
-     ">
-    </div>
+    <div id="messageArea"></div>
 
     <div id="grid"></div>
     <div id="imagePreview"></div>
@@ -296,7 +267,9 @@ const COLORS = {
     0:"#8a8a8a",
     1:"#ffd84d",
     2:"#ff5c5c",
-    3:"#57d657"
+    3:"#57d657",
+    4:"#566ef4",
+    5:"#df82ef"
 };
 
 const columnImages = {
@@ -311,12 +284,17 @@ const columnImages = {
     9: "9.png"
 };
 
-let currentTeam = 1;
-let timer = null;
+function getMaxY(x){
+    return x === 8 ? 10 : 5;
+}
 
+
+let currentTeam = 1;
 const grid = document.getElementById("grid");
 const preview =
     document.getElementById("imagePreview");
+const messageArea =
+    document.getElementById("messageArea");
 
 
 
@@ -333,7 +311,7 @@ function selectTeam(team){
 
     updateGrid();
 
-    timer = setInterval(updateGrid,10000);
+    setInterval(updateGrid,10000);
 
 }
 
@@ -346,7 +324,7 @@ async function updateGrid(){
 
     try{
 
-        document.getElementById("status").textContent = "更新中...";
+        document.getElementById("status").textContent = "更新中";
 
         const response = await fetch(
             GAS_URL + "?t=" + Date.now()
@@ -368,7 +346,7 @@ async function updateGrid(){
 
             board[x] = [];
 
-            const maxY = (x === 8) ? 10 : 5;
+            const maxY = getMaxY(x);
 
             for(let y=1; y<=maxY; y++){
                 board[x][y] = 0;
@@ -400,8 +378,6 @@ async function updateGrid(){
         const firstCell = board[1][1];
         const unlockCell = board[1][5];
         
-        const messageArea =
-            document.getElementById("messageArea");
         
         if(firstCell === 0){
         
@@ -447,7 +423,7 @@ async function updateGrid(){
 
         for(let x=1; x<=9; x++){
 
-            const maxY = (x === 8) ? 10 : 5;
+            const maxY = getMaxY(x);
 
             for(let y=1; y<=maxY; y++){
 
@@ -469,7 +445,7 @@ async function updateGrid(){
 
             let allGray = true;
 
-            const maxY = (x === 8) ? 10 : 5;
+            const maxY = getMaxY(x);
 
             for(let y=1; y<=maxY; y++){
 
@@ -552,9 +528,6 @@ async function updateGrid(){
           img.className = "columnImage";
           img.alt = x;
 
-          img.addEventListener("contextmenu", e => {
-               e.preventDefault();
-          });
           
           // タッチ開始
           img.addEventListener("pointerdown", () => {
@@ -588,7 +561,7 @@ async function updateGrid(){
             let exists = false;
 
             visibleColumns.forEach(x=>{
-                if(!(x !== 8 && y > 5)){
+                if(y <= getMaxY(x)){
                     exists = true;
                 }
             });
@@ -612,7 +585,7 @@ async function updateGrid(){
                const cell = document.createElement("div");
                cell.className = "cell";
 
-               if(x !== 8 && y > 5){
+               if(y > getMaxY(x)){
                    // 存在しないセルは透明にして場所だけ確保
                     cell.style.visibility = "hidden";
                 }
