@@ -261,6 +261,16 @@ p,
         </div>
     </div>
 
+    <div id="messageArea"
+     style="
+        display:none;
+        margin-top:60px;
+        font-size:1.5rem;
+        font-weight:bold;
+        color:#d8e4ff;
+     ">
+    </div>
+
     <div id="grid"></div>
     <div id="imagePreview"></div>
 
@@ -382,6 +392,52 @@ async function updateGrid(){
             }
 
         });
+
+        // -------------------------
+        // 表示可否判定
+        // -------------------------
+        
+        const firstCell = board[1][1];
+        const unlockCell = board[1][5];
+        
+        const messageArea =
+            document.getElementById("messageArea");
+        
+        if(firstCell === 0){
+        
+            grid.style.display = "none";
+            document.getElementById("progressArea").style.display = "none";
+        
+            messageArea.style.display = "block";
+            messageArea.textContent =
+                "公演開始までしばらくお待ちください。";
+        
+            document.getElementById("status").textContent =
+                "最終更新 : " +
+                new Date().toLocaleTimeString("ja-JP");
+        
+            return;
+        }
+        
+        if(unlockCell !== 3){
+        
+            grid.style.display = "none";
+            document.getElementById("progressArea").style.display = "none";
+        
+            messageArea.style.display = "block";
+            messageArea.textContent =
+                "情報の入力を待機しています...";
+        
+            document.getElementById("status").textContent =
+                "最終更新 : " +
+                new Date().toLocaleTimeString("ja-JP");
+        
+            return;
+        }
+        
+        // 通常表示
+        messageArea.style.display = "none";
+        grid.style.display = "grid";
 
         // -------------------------
         // 緑マス数を計算
