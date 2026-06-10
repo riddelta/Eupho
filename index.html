@@ -416,23 +416,21 @@ async function updateGrid(){
         grid.style.display = "grid";
 
         // -------------------------
-        // 緑マス数を計算
+        // 踏破率を計算
         // -------------------------
 
-        let greenCount = 0;
-
+        let completionRate = 0;
         for(let x=1; x<=9; x++){
-
             const maxY = getMaxY(x);
-
             for(let y=1; y<=maxY; y++){
-
                 if(board[x][y] === 3){
-                    greenCount++;
+                    completionRate++;
+                    completionRate++;
                 }
-
+                if(board[x][y] === 1){
+                    completionRate++;
+                }
             }
-
         }
 
         // -------------------------
@@ -612,7 +610,7 @@ async function updateGrid(){
                 greenCount;
 
             document.getElementById("progressText").textContent =
-                Math.round(greenCount * 100 / 50) + "%";
+                completionRate + "%";
 
         }
         else{
