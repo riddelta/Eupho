@@ -424,8 +424,7 @@ async function updateGrid(){
             const maxY = getMaxY(x);
             for(let y=1; y<=maxY; y++){
                 if(board[x][y] === 3){
-                    completionRate++;
-                    completionRate++;
+                    completionRate = completionRate + 2
                 }
                 if(board[x][y] === 1){
                     completionRate++;
@@ -607,7 +606,7 @@ async function updateGrid(){
             document.getElementById("progressArea").style.display = "block";
 
             document.getElementById("progressBar").value =
-                greenCount;
+                completionRate/2;
 
             document.getElementById("progressText").textContent =
                 completionRate + "%";
